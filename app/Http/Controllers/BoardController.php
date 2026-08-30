@@ -42,7 +42,10 @@ class BoardController extends Controller
             ['name' => 'Done', 'position' => 2],
         ]);
 
-        return response()->json($board->load('columns.cards'), 201);
+        $board->load('columns.cards');
+        $board->pivot = (object) ['role' => 'owner'];
+
+        return response()->json($board, 201);
     }
 
     // Vraća jedan board sa kolonama i karticama, samo ako je korisnik član

@@ -24,7 +24,7 @@ class ColumnController extends Controller
         }
 
         // Nova kolona ide na kraj (poslije svih postojećih)
-        $nextPosition = $board->columns()->max('position') + 1;
+        $nextPosition = ($board->columns()->max('position') ?? -1) + 1;
 
         $column = $board->columns()->create([
             'name' => $request->name,

@@ -1,59 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kanban Board App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack project management application built with Laravel and React, featuring drag-and-drop task boards similar to Trello. Users can create boards, organize tasks into customizable columns, and collaborate with team members in real time.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Authentication** — Secure registration/login via Laravel Sanctum (token-based API auth)
+- **Boards** — Create, rename, and delete project boards
+- **Columns** — Add custom columns to organize workflow (defaults to To Do / In Progress / Done)
+- **Cards** — Create tasks with title, description, and due date
+- **Drag & Drop** — Reorder cards within a column or move them between columns
+- **Collaboration** — Invite other registered users to a board by email; owners can manage membership
+- **Role-based permissions** — Board owners have full control; members can manage cards but not board settings or membership
+- **Automated tests** — PHPUnit feature tests covering authentication, authorization, and core board/card logic
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Backend**
+- Laravel 11
+- Laravel Sanctum (API token authentication)
+- MySQL
+- PHPUnit (feature testing)
 
-## Learning Laravel
+**Frontend**
+- React 19
+- React Router (client-side routing)
+- Axios (API communication)
+- @hello-pangea/dnd (drag-and-drop)
+- Vite (build tool, via `laravel-vite-plugin`)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Architecture
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+This is a decoupled SPA: Laravel serves a pure REST API (`/api/*` routes) and Laravel Sanctum handles authentication via bearer tokens. React is the sole frontend, rendered client-side and talking to the backend exclusively through the API — there is no server-rendered Blade UI beyond the single shell page that bootstraps React.
 
-## Laravel Sponsors
+## Getting Started
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Prerequisites
 
-### Premium Partners
+- PHP 8.2+
+- Composer
+- Node.js and npm
+- MySQL
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Installation
 
-## Contributing
+1. Clone the repository and install dependencies:
+```bash
+   git clone <repo-url>
+   cd kanban-app
+   composer install
+   npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. Copy the environment file and generate an app key:
+```bash
+   cp .env.example .env
+   php artisan key:generate
+```
 
-## Code of Conduct
+3. Create a MySQL database and update your `.env` with your database credentials:
+```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=kanban_db
+   DB_USERNAME=root
+   DB_PASSWORD=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. Run migrations:
+```bash
+   php artisan migrate
+```
 
-## Security Vulnerabilities
+5. Start the Laravel server and the Vite dev server (in two separate terminals):
+```bash
+   php artisan serve
+   npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+6. Open `http://127.0.0.1:8000` in your browser.
 
-## License
+### Running Tests
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan test
+```
+
+Tests run against an in-memory SQLite database and won't affect your local MySQL data.
+
+## Deployment
+
+The app is deployment-ready for platforms like Railway, Render, or DigitalOcean (standard Laravel + MySQL setup, no Docker required). For this project, deployment was intentionally left to local demonstration — no hosting provider currently offers a free tier suited to keeping a two-service app (web + database) running continuously at no cost.
+
+## API Overview
+
+All endpoints are prefixed with `/api` and, except for `register`/`login`, require a `Authorization: Bearer <token>` header.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/register` | Create an account, returns a token |
+| POST | `/login` | Authenticate, returns a token |
+| POST | `/logout` | Revoke the current token |
+| GET | `/user` | Get the authenticated user |
+| GET | `/boards` | List boards the user belongs to |
+| POST | `/boards` | Create a board (auto-creates 3 default columns) |
+| GET | `/boards/{id}` | Get a board with columns, cards, and members |
+| PUT | `/boards/{id}` | Rename a board (owner only) |
+| DELETE | `/boards/{id}` | Delete a board (owner only) |
+| POST | `/boards/{id}/columns` | Add a column |
+| PUT | `/columns/{id}` | Rename or reorder a column |
+| DELETE | `/columns/{id}` | Delete a column |
+| POST | `/columns/{id}/cards` | Add a card |
+| PUT | `/cards/{id}` | Update, move, or reorder a card |
+| DELETE | `/cards/{id}` | Delete a card |
+| POST | `/boards/{id}/members` | Invite a user by email (owner only) |
+| DELETE | `/boards/{id}/members/{userId}` | Remove a member (owner only) |
